@@ -15,18 +15,24 @@ const Login = () => {
 
     const validate = () => {
         let isValid = true;
-        //validating the first name
+        setEmailError('');
+        setPasswordError('');
+
         if (email.trim() === '' || !email.includes('@')) {
             setEmailError('Email is required');
+            toast.error('Email is required');
             isValid = false;
         }
 
         if (password.trim() === '') {
             setPasswordError('Password is required');
+            toast.error('Password is required');
             isValid = false;
         }
+
         return isValid;
-    }
+    };
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -54,6 +60,14 @@ const Login = () => {
             //recived data: success message
             if (res.data.success === false) {
                 toast.error(res.data.message);
+
+                // Handle account lockout case
+                if (res.data.message.includes("Too many failed attempts")) {
+                    toast.error("Too many failed attempts. Your account is locked for 15 minutes. Try again later.");
+                }
+
+                // Reset CAPTCHA on failed login
+                recaptchaRef.current.reset();
             } else {
                 window.location.href = '/';
                 toast.success(res.data.message);
@@ -67,8 +81,22 @@ const Login = () => {
                 //local storage set
                 localStorage.setItem('userData', convertedData);
             }
+        }).catch((err) => {
+            if (err.response && err.response.data && err.response.data.message) {
+                toast.error(err.response.data.message);
+
+                // Handle account lockout case
+                if (err.response.data.message.includes("Too many failed attempts")) {
+                    toast.error("Too many failed attempts. Your account is locked for 15 minutes. Try again later.");
+                }
+            } else {
+                toast.error("An error occurred. Please try again.");
+            }
+
+            // Reset CAPTCHA on error
+            recaptchaRef.current.reset();
         });
-    }
+    };
 
     const images = [
         {
@@ -157,6 +185,6 @@ const Login = () => {
             </div>
         </>
     );
-}
+};
 
 export default Login;

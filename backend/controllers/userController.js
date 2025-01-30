@@ -90,7 +90,6 @@ const createUser = async (req, res) => {
     }
 };
 
-
 // User Login
 const loginUser = async (req, res) => {
     console.log(req.body);
@@ -124,14 +123,40 @@ const loginUser = async (req, res) => {
             });
         }
 
+        // Check if the account is locked
+        const lockoutTime = 15 * 60 * 1000; // 15 minutes in milliseconds
+        if (user.failedAttempts >= 5 && Date.now() - user.lastAttemptTime < lockoutTime) {
+            return res.status(400).json({
+                success: false,
+                message: "Account is locked. Try again later.",
+            });
+        }
+
         // Validate password
         const isValidPassword = await bcrypt.compare(password, user.password);
         if (!isValidPassword) {
+            user.failedAttempts = (user.failedAttempts || 0) + 1;
+            user.lastAttemptTime = Date.now();
+            await user.save();
+
+            // Lock account if 5 failed attempts reached
+            if (user.failedAttempts >= 5) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Too many failed attempts. Your account is locked for 15 minutes.",
+                });
+            }
+
             return res.status(400).json({
                 success: false,
                 message: "Invalid password",
             });
         }
+
+        // Reset failed attempts on successful login
+        user.failedAttempts = 0;
+        user.lastAttemptTime = null;
+        await user.save();
 
         // Generate JWT token
         const token = jwt.sign(
@@ -155,6 +180,7 @@ const loginUser = async (req, res) => {
         });
     }
 };
+
 
 // verify captcha
 const verifyRecaptcha = async (token) => {
