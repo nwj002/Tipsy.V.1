@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { createProductApi, deleteProduct, getAllProducts } from '../../../apis/api.js';
 import AdminNav from '../../../components/AdminNav.jsx';
 import FooterCard from '../../../components/FooterCard.jsx';
-import './Admin.css'; // Custom CSS file for additional styling
+import './Admin.css'; 
 
 const AdminDashboard = () => {
     const [products, setProducts] = useState([]);
