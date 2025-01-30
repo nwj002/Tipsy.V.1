@@ -7,6 +7,7 @@ const dotenv = require("dotenv");
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
 const sanitizeHtml = require("sanitize-html");
+const ActivityLog = require("../models/activityLogModel");
 
 dotenv.config();
 
@@ -125,6 +126,11 @@ const loginUser = async (req, res) => {
         const user = await userModel.findOne({ email });
 
         if (!user) {
+            await ActivityLog.create({
+                userID: null,
+                action: "LOGIN_FAILED",
+                ipAddress: req.ip,
+            });
             return res.status(400).json({
                 success: false,
                 message: "User does not exist.",
@@ -133,6 +139,11 @@ const loginUser = async (req, res) => {
 
         const lockoutTime = 15 * 60 * 1000;
         if (user.failedAttempts >= 5 && Date.now() - user.lastAttemptTime < lockoutTime) {
+            await ActivityLog.create({
+                userID: user._id,
+                action: "ACCOUNT_LOCKED",
+                ipAddress: req.ip,
+            });
             return res.status(400).json({
                 success: false,
                 message: "Account is locked. Try again later.",
@@ -144,6 +155,12 @@ const loginUser = async (req, res) => {
             user.failedAttempts = (user.failedAttempts || 0) + 1;
             user.lastAttemptTime = Date.now();
             await user.save();
+
+            await ActivityLog.create({
+                userID: user._id,
+                action: "LOGIN_FAILED",
+                ipAddress: req.ip,
+            });
 
             if (user.failedAttempts >= 5) {
                 return res.status(400).json({
@@ -161,6 +178,13 @@ const loginUser = async (req, res) => {
         // Reset failed attempts
         user.failedAttempts = 0;
         user.lastAttemptTime = null;
+        await user.save();
+
+        await ActivityLog.create({
+            userID: user._id,
+            action: "LOGIN_SUCCESS",
+            ipAddress: req.ip,
+        });
 
         // Generate OTP
         const otp = Math.floor(100000 + Math.random() * 900000).toString(); // Convert OTP to string
