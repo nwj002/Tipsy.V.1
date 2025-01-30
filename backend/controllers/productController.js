@@ -74,8 +74,7 @@ const getAllProducts = async (req, res) => {
             "error": error
         })
     }
-    //Fetch all products
-    //Send response
+   
 }
 //fetch single product
 const getSingleProduct = async (req, res) => {

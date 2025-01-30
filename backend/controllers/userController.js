@@ -286,7 +286,6 @@ const verifyLoginOtp = async (req, res) => {
     }
 };
 
-
 // verify captcha
 const verifyRecaptcha = async (token) => {
     const secretKey = process.env.RECAPTCHA_SECRET_KEY;
@@ -301,39 +300,6 @@ const verifyRecaptcha = async (token) => {
     }
 };
 
-//fetch user data
-// const getUserData = async (req, res) => {
-//     const { userId } = req.query;
-
-//     // if (!userId) {
-//     //     return res.json({
-//     //         success: false,
-//     //         message: "User ID is required!",
-//     //     });
-//     // }
-
-//     try {
-//         const user = await userModel.findById(userId);
-//         if (!user) {
-//             return res.json({
-//                 success: false,
-//                 message: "User does not exist!",
-//             });
-//         }
-
-//         res.json({
-//             success: true,
-//             message: "User details fetched successfully",
-//             userData: user,
-//         });
-//     } catch (e) {
-//         console.log(e);
-//         return res.json({
-//             success: false,
-//             message: "Internal server error!",
-//         });
-//     }
-// };
 // function to get single user
 const getSingleUser = async (req, res) => {
     const id = req.params.id;
@@ -616,7 +582,6 @@ module.exports = {
     deleteUser,
     getUserByID,
     getAllUsers,
-    // getSingleUsermobile,
     getMe,
     verifyLoginOtp,
     getActivityLogs,

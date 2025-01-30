@@ -51,7 +51,7 @@ exports.getUserOrders = async (req, res) => {
       })
       .sort({ createdAt: -1 });
 
-    console.log('Fetched Orders:', orders); // Debugging
+    console.log('Fetched Orders:', orders); 
 
     res.status(200).json({
       success: true,
