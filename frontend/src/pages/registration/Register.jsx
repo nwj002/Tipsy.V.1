@@ -2,9 +2,11 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useRef, useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { toast } from 'react-toastify';
+import sanitizeHtml from "sanitize-html";
 import { registerUserApi } from '../../apis/api';
 import FooterCard from '../../components/FooterCard';
 import './Register.css';
+
 
 const Register = () => {
 
@@ -49,6 +51,12 @@ const Register = () => {
     const handleConfirmPassword = (e) => {
         setConfirmPassword(e.target.value);
     };
+
+    // Helper function to sanitize input
+    const cleanInput = (input) => sanitizeHtml(input, {
+        allowedTags: [], // No HTML allowed
+        allowedAttributes: {}
+    });
 
     //validaation
     var validate = () => {
@@ -111,12 +119,12 @@ const Register = () => {
         }
 
         const data = {
-            "fullname": fullname,
-            "email": email,
-            "username": username,
-            "age": age,
-            "phone": phone,
-            "password": password,
+            "fullname": cleanInput(fullname),
+            "email": cleanInput(email),
+            "username": cleanInput(username),
+            "age": cleanInput(age),
+            "phone": cleanInput(phone),
+            "password": cleanInput(password),
             "captchaToken": captchaToken
         };
 
