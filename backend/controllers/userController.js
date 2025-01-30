@@ -6,12 +6,13 @@ const axios = require("axios");
 const dotenv = require("dotenv");
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
+const sanitizeHtml = require("sanitize-html");
 
 dotenv.config();
 
 // Helper function to sanitize inputs
 const cleanInput = (input) => sanitizeHtml(input, {
-    allowedTags: [], // No HTML allowed
+    allowedTags: [],
     allowedAttributes: {},
 });
 
