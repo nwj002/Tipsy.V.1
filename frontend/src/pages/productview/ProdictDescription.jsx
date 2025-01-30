@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import sanitizeHtml from "sanitize-html";
 import { addToCartApi, createReviewApi, getReviewsByProductID, getSingleProduct, getUserDataById } from '../../apis/api';
 import FooterCard from '../../components/FooterCard';
 import StarRating from '../../components/StarRating';
@@ -17,6 +18,11 @@ const ProductDescription = () => {
     const [rating, setRating] = useState(0);
     const [quantity, setQuantity] = useState(1);
     const [productPrice] = useState(0);
+
+    const cleanInput = (input) => sanitizeHtml(input, {
+        allowedTags: [],
+        allowedAttributes: {}
+    });
 
     const increaseQuantity = () => {
         setQuantity(prevQuantity => prevQuantity + 1);
@@ -90,11 +96,16 @@ const ProductDescription = () => {
             return;
         }
 
+        const cleanInput = (input) => sanitizeHtml(input, {
+            allowedTags: [], // No HTML allowed
+            allowedAttributes: {}
+        });
+
         const formData = new FormData();
-        formData.append('userID', user.id);
-        formData.append('productID', id);
-        formData.append('review', review);
-        formData.append('rating', rating);
+        formData.append('userID', cleanInput(user.id));
+        formData.append('productID', cleanInput(id));
+        formData.append('review', cleanInput(review));
+        formData.append('rating', cleanInput(rating));
 
         try {
             const res = await createReviewApi(formData);
@@ -102,8 +113,8 @@ const ProductDescription = () => {
                 toast.success(res.data.message);
                 const newReview = {
                     userID: user.id,
-                    rating,
-                    review,
+                    rating: cleanInput(rating),
+                    review: cleanInput(review),
                     user: user, // Add user information
                 };
                 setReviews((prevReviews) => [...prevReviews, newReview]);
