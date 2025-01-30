@@ -17,6 +17,9 @@ router.get("/get_single_user", authGuard, userController.getSingleUser);
 //update user profile
 router.put('/update/:id', userController.updateUser);
 
+//getActivityLogs
+router.get('/activity_logs', userController.getActivityLogs)
+
 // forgot password
 router.post('/forgot_password', userController.forgotPassword)
 

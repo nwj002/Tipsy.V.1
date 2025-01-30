@@ -588,6 +588,22 @@ const getMe = async (req, res) => {
     }
 };
 
+const getActivityLogs = async (req, res) => {
+    try {
+        const logs = await ActivityLog.find().populate("userID", "email username");
+        res.status(200).json({
+            success: true,
+            logs,
+        });
+    } catch (error) {
+        console.error("Error fetching logs:", error);
+        res.status(500).json({
+            success: false,
+            message: "Server Error",
+        });
+    }
+};
+
 
 
 module.exports = {
@@ -603,5 +619,6 @@ module.exports = {
     // getSingleUsermobile,
     getMe,
     verifyLoginOtp,
+    getActivityLogs,
 };
 

@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, Button, Spinner, Table } from 'react-bootstrap';
-import { delUserById, getUserData } from '../../../apis/api';
+import { delUserById, getActivityLogsApi, getUserData } from '../../../apis/api';
 import AdminNav from '../../../components/AdminNav';
 import FooterCard from '../../../components/FooterCard';
 
 const ViewUsers = () => {
     const [users, setUsers] = useState([]);
+    const [activityLogs, setActivityLogs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [showModal, setShowModal] = useState(false);
-    const [selectedUser, setSelectedUser] = useState(null);
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -23,7 +22,17 @@ const ViewUsers = () => {
             }
         };
 
+        const fetchActivityLogs = async () => {
+            try {
+                const response = await getActivityLogsApi();
+                setActivityLogs(response.data.logs || []);
+            } catch (error) {
+                setError('Failed to fetch activity logs');
+            }
+        };
+
         fetchUsers();
+        fetchActivityLogs();
     }, []);
 
     const handleDelete = async (userId) => {
@@ -36,13 +45,6 @@ const ViewUsers = () => {
             }
         }
     };
-
-    const handleShowModal = (user) => {
-        setSelectedUser(user);
-        setShowModal(true);
-    };
-
-    const handleCloseModal = () => setShowModal(false);
 
     return (<>
         <div className="container-fluid" style={{ backgroundColor: '#FFFFFF', color: '#000000' }}>
@@ -59,7 +61,7 @@ const ViewUsers = () => {
                         <div className="table-responsive">
                             <Table bordered hover className="bg-white" style={{ backgroundColor: '#D8CEC4' }}>
                                 <thead>
-                                    <tr >
+                                    <tr>
                                         <th style={{ backgroundColor: '#D29062', color: '#FFFFFF' }}>Username</th>
                                         <th style={{ backgroundColor: '#D29062', color: '#FFFFFF' }}>Email</th>
                                         <th style={{ backgroundColor: '#D29062', color: '#FFFFFF' }}>Phone Number</th>
@@ -76,7 +78,6 @@ const ViewUsers = () => {
                                                 <td>{user.phone}</td>
                                                 <td>{user.age}</td>
                                                 <td>
-
                                                     <Button
                                                         variant="danger"
                                                         onClick={() => handleDelete(user._id)}
@@ -97,8 +98,35 @@ const ViewUsers = () => {
                         </div>
                     )}
 
-                    {/* Edit User Modal */}
-
+                    <h2 className="my-4" style={{ color: '#D29062' }}>Activity Logs</h2>
+                    <div className="table-responsive">
+                        <Table bordered hover className="bg-white" style={{ backgroundColor: '#D8CEC4' }}>
+                            <thead>
+                                <tr>
+                                    <th style={{ backgroundColor: '#D29062', color: '#FFFFFF' }}>User</th>
+                                    <th style={{ backgroundColor: '#D29062', color: '#FFFFFF' }}>Action</th>
+                                    <th style={{ backgroundColor: '#D29062', color: '#FFFFFF' }}>IP Address</th>
+                                    <th style={{ backgroundColor: '#D29062', color: '#FFFFFF' }}>Timestamp</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {activityLogs.length > 0 ? (
+                                    activityLogs.map((log) => (
+                                        <tr key={log._id}>
+                                            <td>{log.userID?.email || "Unknown"}</td>
+                                            <td>{log.action}</td>
+                                            <td>{log.ipAddress}</td>
+                                            <td>{new Date(log.timestamp).toLocaleString()}</td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="4">No activity logs found</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </Table>
+                    </div>
                 </main>
             </div>
         </div>
