@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { toast } from "react-toastify";
+import sanitizeHtml from "sanitize-html";
 import { loginUserApi, verifyLoginOtpApi } from "../../apis/api";
 import "./Login.css";
 
@@ -17,6 +18,13 @@ const Login = () => {
     const [showOtpOverlay, setShowOtpOverlay] = useState(false);
     const [otp, setOtp] = useState("");
     const recaptchaRef = useRef(null);
+
+    // Helper function to sanitize input
+    const cleanInput = (input) => sanitizeHtml(input, {
+        allowedTags: [], // No HTML allowed
+        allowedAttributes: {}
+    });
+
 
     // Validation function
     const validate = () => {
@@ -54,8 +62,8 @@ const Login = () => {
         }
 
         const data = {
-            email,
-            password,
+            email: cleanInput(email),
+            password: cleanInput(password),
             captchaToken,
         };
 
