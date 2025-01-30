@@ -7,6 +7,8 @@ const connectDatabase = require('./database/database');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const acceptFormData = require('express-fileupload');
+const rateLimit = require("express-rate-limit");
+
 
 // creating an express application. `
 const app = express();
@@ -42,6 +44,13 @@ app.use(acceptFormData())
 //make a static public folder
 app.use(express.static('./public'))
 
+// Apply rate limiting for login and registration routes
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 5, // Limit each IP to 5 requests per windowMs
+    message: "Too many attempts, please try again later.",
+});
+
 
 //http://localhost:5000/api/user/create
 
@@ -52,6 +61,8 @@ app.use('/api/cart', require('./routes/cartRoutes'))
 app.use('/api/order', require('./routes/orderRoutes'))
 app.use('/api/address', require('./routes/addressRoute'))
 app.use('/api/review', require('./routes/reviewRoute'))
+
+app.use("/api/user/login", authLimiter);
 
 
 // starting the server. 
