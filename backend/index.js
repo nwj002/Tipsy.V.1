@@ -8,57 +8,42 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const acceptFormData = require('express-fileupload');
 const rateLimit = require("express-rate-limit");
-const helmet = require("helmet");
+
+
 
 // creating an express application. `
 const app = express();
-app.use(express.json());
+app.use(express.json())
 
 //configure cors policy
 const corsOptions = {
     origin: true,
     credentials: true,
     optionSuccessStatus: 200,
-};
-app.use(cors(corsOptions));
+
+}
+app.use(cors(corsOptions))
 
 //dotenv configuration
-dotenv.config();
+dotenv.config()
 
-//connecting to database 
-connectDatabase();
+//connecting to databas 
+connectDatabase()
 
 //defining the port 
 const PORT = process.env.PORT;
-
-// Apply security headers using Helmet
-app.use(
-    helmet({
-        contentSecurityPolicy: {
-            directives: {
-                defaultSrc: ["'self'"],
-                scriptSrc: ["'self'", "https://apis.google.com"],
-                styleSrc: ["'self'", "https://fonts.googleapis.com"],
-            },
-        },
-        frameguard: { action: "deny" }, // Prevents Clickjacking
-        hidePoweredBy: true, // Hides Express from attackers
-        xssFilter: true, // Adds XSS protection
-        noSniff: true, // Prevents MIME-type sniffing
-    })
-);
 
 //making a test endpoint. 
 // EndPoints : POST, GET, PUT, DELETE
 app.get('/test', (req, res) => {
     res.send('Hello World, test api is working.');
-});
+})
 
 //config form data
-app.use(acceptFormData());
+app.use(acceptFormData())
 
 //make a static public folder
-app.use(express.static('./public'));
+app.use(express.static('./public'))
 
 // Apply rate limiting for login and registration routes
 const authLimiter = rateLimit({
@@ -67,15 +52,19 @@ const authLimiter = rateLimit({
     message: "Too many attempts, please try again later.",
 });
 
+
+//http://localhost:5000/api/user/create
+
 //configuring routes
-app.use('/api/user', require('./routes/userRoutes'));
-app.use('/api/product', require('./routes/productRoutes'));
-app.use('/api/cart', require('./routes/cartRoutes'));
-app.use('/api/order', require('./routes/orderRoutes'));
-app.use('/api/address', require('./routes/addressRoute'));
-app.use('/api/review', require('./routes/reviewRoute'));
+app.use('/api/user', require('./routes/userRoutes'))
+app.use('/api/product', require('./routes/productRoutes'))
+app.use('/api/cart', require('./routes/cartRoutes'))
+app.use('/api/order', require('./routes/orderRoutes'))
+app.use('/api/address', require('./routes/addressRoute'))
+app.use('/api/review', require('./routes/reviewRoute'))
 
 app.use("/api/user/login", authLimiter);
+
 
 // starting the server. 
 app.listen(PORT, () => {

@@ -1,10 +1,11 @@
 /* Profile.css */
 
 :root {
-    --color-background: #D8CEC4;
+    --color-background: #F5F5F5;
     --color-primary: #D29062;
     --color-text: black;
     --color-white: white;
+    --color-dark: #333;
 }
 
 .profile-container {
@@ -12,51 +13,57 @@
     justify-content: center;
     align-items: center;
     background-color: var(--color-white);
-    padding: 20px;
-    height: 100vh;
+    padding: 40px 20px;
+    min-height: 100vh;
 }
 
 .profile-card {
     display: flex;
+    flex-direction: row;
     background-color: var(--color-white);
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 800px;
+    max-width: 900px;
     overflow: hidden;
 }
 
 .profile-left {
     background: linear-gradient(to bottom right, #D29062, #D8CEC4);
-    color: var(--color-black);
-    padding: 20px;
+    color: var(--color-white);
+    padding: 30px;
     width: 40%;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    text-align: center;
 }
 
 .profile-info h2 {
     margin: 0;
-
+    font-size: 24px;
+    font-weight: bold;
 }
 
 .profile-info p {
-    margin: 5px 0 20px;
+    margin: 10px 0 20px;
     font-size: 18px;
-    color: var(--color-black);
+    color: var(--color-dark);
 }
 
 .profile-right {
-    padding: 20px;
+    padding: 30px;
     width: 60%;
     background: var(--color-background);
+    border-radius: 0 10px 10px 0;
 }
 
 h1 {
     color: var(--color-primary);
     margin-bottom: 20px;
+    font-size: 26px;
+    font-weight: bold;
 }
 
 .profile-form .form-group {
@@ -66,7 +73,8 @@ h1 {
 .profile-form label {
     display: block;
     margin-bottom: 5px;
-    color: var(--color-text);
+    color: var(--color-dark);
+    font-weight: 600;
 }
 
 .profile-form input {
@@ -75,55 +83,55 @@ h1 {
     border: 1px solid #ccc;
     border-radius: 5px;
     box-sizing: border-box;
+    font-size: 16px;
 }
 
 .profile-form .form-group-grid {
     display: flex;
     justify-content: space-between;
+    gap: 10px;
 }
 
 .profile-form .form-group-grid .form-group {
     flex: 1;
-    margin-right: 10px;
-}
-
-.profile-form .form-group-grid .form-group:last-child {
-    margin-right: 0;
 }
 
 .profile-btn {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     background-color: var(--color-primary);
     color: var(--color-white);
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 18px;
+    font-weight: bold;
+    transition: background 0.3s;
 }
 
 .profile-btn:hover {
-    background-color: darken(var(--color-primary), 10%);
+    background-color: #B87348;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
     .profile-card {
         flex-direction: column;
     }
 
-    .profile-right {
-        width: 100%;
-    }
-
     .profile-left {
         width: 100%;
+        padding: 20px;
+        border-radius: 10px 10px 0 0;
+    }
+
+    .profile-right {
+        width: 100%;
+        padding: 20px;
+        border-radius: 0 0 10px 10px;
     }
 
     .profile-form .form-group-grid {
         flex-direction: column;
-    }
-
-    .profile-form .form-group-grid .form-group {
-        margin-right: 0;
+        gap: 0;
     }
 }
