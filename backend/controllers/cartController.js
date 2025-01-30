@@ -27,10 +27,6 @@ const addToCart = async (req, res) => {
         });
 
         if (existingInCart) {
-            //if the product already exists in the cart and the quantity is 1 then increment the quantity by 1
-            // return Cart.findByIdAndUpdate(existingInCart._id, {
-            //     $inc: { quantity: quantity }
-            // }, { new: true });
 
             return res.json({
                 success: false,
@@ -187,7 +183,6 @@ const cart = async (req, res) => {
 module.exports = {
     addToCart,
     getCartByUserID,
-    // getCart,
     updateCart,
     removeFromCart,
     updateUserCartStatus,
