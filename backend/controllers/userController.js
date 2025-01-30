@@ -30,6 +30,15 @@ const createUser = async (req, res) => {
         });
     }
 
+    // Validate password strength
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/;
+    if (!passwordRegex.test(password)) {
+        return res.status(400).json({
+            success: false,
+            message: "Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number, and a special character",
+        });
+    }
+
     try {
         // Check if user already exists
         const userExists = await userModel.findOne({
@@ -40,14 +49,6 @@ const createUser = async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message: "Email or username already exists!",
-            });
-        }
-
-        // Validate password length
-        if (password.length < 8) {
-            return res.status(400).json({
-                success: false,
-                message: "Password must be at least 8 characters long",
             });
         }
 
@@ -88,6 +89,7 @@ const createUser = async (req, res) => {
         });
     }
 };
+
 
 // User Login
 const loginUser = async (req, res) => {
@@ -154,6 +156,7 @@ const loginUser = async (req, res) => {
     }
 };
 
+// verify captcha
 const verifyRecaptcha = async (token) => {
     const secretKey = process.env.RECAPTCHA_SECRET_KEY;
     const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${token}`;

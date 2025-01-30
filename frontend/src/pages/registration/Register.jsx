@@ -76,6 +76,9 @@ const Register = () => {
         if (password.trim() === '') {
             setPasswordError('Please enter your password');
             isValid = false;
+        } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/.test(password)) {
+            setPasswordError('Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number, and a special character');
+            isValid = false;
         }
         if (confirmPassword.trim() === '') {
             setConfirmPasswordError('Please confirm your password');
