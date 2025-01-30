@@ -1,16 +1,21 @@
 const Rating = require("../models/reviewandratingModel");
+const sanitizeHtml = require("sanitize-html");
+
+// Helper function to sanitize input
+const cleanInput = (input) => sanitizeHtml(input, {
+    allowedTags: [], // No HTML allowed
+    allowedAttributes: {}
+});
 
 const createRating = async (req, res) => {
     console.log(req.body);
     const id = req.user.id;
 
-    // destructure data 
-    const {
-        userID,
-        productID,
-        review,
-        rating,
-    } = req.body;
+    // Destructure data and sanitize input
+    const userID = cleanInput(req.body.userID);
+    const productID = cleanInput(req.body.productID);
+    const review = cleanInput(req.body.review);
+    const rating = cleanInput(req.body.rating);
 
     // validate the data 
     if (!userID || !productID) {
@@ -61,24 +66,18 @@ const updateRating = async (req, res) => {
     console.log(req.body);
     console.log(req.files);
 
-    const {
-        userID,
-        productID,
-        review,
-        rating,
-    } = req.body;
+    // Sanitize inputs
+    const userID = cleanInput(req.body.userID);
+    const productID = cleanInput(req.body.productID);
+    const review = cleanInput(req.body.review);
+    const rating = cleanInput(req.body.rating);
 
     const id = req.params.id;
-    if (!userID
-        || !productID
-        || !review
-        || !rating
-
-    ) {
+    if (!userID || !productID || !review || !rating) {
         return res.json({
             success: true,
             message: "All fields are required!"
-        })
+        });
     }
     try {
         const updatedRating = {
