@@ -24,10 +24,6 @@ const userSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    // image: {
-    //     type: String,
-    //     required: false
-    // },
     phone: {
         type: Number,
         required: false,
@@ -44,9 +40,24 @@ const userSchema = new mongoose.Schema({
     isAdmin: {
         type: Boolean,
         default: false
-
+    },
+    otp: {
+        type: String,
+        default: null
+    },
+    otpExpires: {
+        type: Date,
+        default: null
+    },
+    failedAttempts: {
+        type: Number,
+        default: 0
+    },
+    lastAttemptTime: {
+        type: Date,
+        default: null
     }
-
 });
+
 const User = mongoose.model('User', userSchema);
 module.exports = User;

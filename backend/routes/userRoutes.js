@@ -29,4 +29,7 @@ router.delete('/delete_account/:id', userController.deleteUser)
 // getting user details
 router.get('/getMe', userController.getMe)
 
+//verifyLoginOtp
+router.post('/verify_login_otp', userController.verifyLoginOtp)
+
 module.exports = router;

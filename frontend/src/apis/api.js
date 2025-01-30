@@ -34,6 +34,9 @@ export const registerUserApi = (data) => api.post('/api/user/create', data);
 //login user api
 export const loginUserApi = (data) => api.post('/api/user/login', data);
 
+// verify otp (router.post('/verify_login_otp', userController.verifyLoginOtp)
+export const verifyLoginOtpApi = (data) => api.post('/api/user/verify_login_otp', data);
+
 //get user profile api
 export const getSingleUserApi = (id) => api.get(`/api/user/profile/${id}`);
 export const getUserDataById = (userId) => api.get(`api/user/user/${userId}`,)

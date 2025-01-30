@@ -4,6 +4,9 @@ const jwt = require('jsonwebtoken');
 const sendOtp = require('../service/sendOtp');
 const axios = require("axios");
 const dotenv = require("dotenv");
+const nodemailer = require("nodemailer");
+const crypto = require("crypto");
+
 dotenv.config();
 
 
@@ -91,11 +94,11 @@ const createUser = async (req, res) => {
 };
 
 // User Login
+// User Login with OTP
 const loginUser = async (req, res) => {
     console.log(req.body);
     const { email, password, captchaToken } = req.body;
 
-    // Validate input fields
     if (!email || !password || !captchaToken) {
         return res.status(400).json({
             success: false,
@@ -103,7 +106,6 @@ const loginUser = async (req, res) => {
         });
     }
 
-    // Validate CAPTCHA
     const isHuman = await verifyRecaptcha(captchaToken);
     if (!isHuman) {
         return res.status(400).json({
@@ -113,7 +115,6 @@ const loginUser = async (req, res) => {
     }
 
     try {
-        // Find user by email
         const user = await userModel.findOne({ email });
 
         if (!user) {
@@ -123,8 +124,7 @@ const loginUser = async (req, res) => {
             });
         }
 
-        // Check if the account is locked
-        const lockoutTime = 15 * 60 * 1000; // 15 minutes in milliseconds
+        const lockoutTime = 15 * 60 * 1000;
         if (user.failedAttempts >= 5 && Date.now() - user.lastAttemptTime < lockoutTime) {
             return res.status(400).json({
                 success: false,
@@ -132,14 +132,12 @@ const loginUser = async (req, res) => {
             });
         }
 
-        // Validate password
         const isValidPassword = await bcrypt.compare(password, user.password);
         if (!isValidPassword) {
             user.failedAttempts = (user.failedAttempts || 0) + 1;
             user.lastAttemptTime = Date.now();
             await user.save();
 
-            // Lock account if 5 failed attempts reached
             if (user.failedAttempts >= 5) {
                 return res.status(400).json({
                     success: false,
@@ -153,28 +151,105 @@ const loginUser = async (req, res) => {
             });
         }
 
-        // Reset failed attempts on successful login
+        // Reset failed attempts
         user.failedAttempts = 0;
         user.lastAttemptTime = null;
+
+        // Generate OTP
+        const otp = Math.floor(100000 + Math.random() * 900000).toString(); // Convert OTP to string
+        const otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes validity
+
+        user.otp = otp;
+        user.otpExpires = otpExpires;
         await user.save();
 
-        // Generate JWT token
-        const token = jwt.sign(
-            { id: user._id },
-            process.env.JWT_SECRET,
-            { expiresIn: "1h" }
-        );
+        console.log("Generated OTP:", otp); // Debugging log
+
+        // Send OTP via email
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: "nwj.shrestha@gmail.com",
+                pass: "kcazmnuxtxeexnrx",
+            },
+        });
+
+        await transporter.sendMail({
+            from: "tipsy@gmail.com",
+            to: email,
+            subject: "Your Login OTP",
+            text: `Your OTP for login is ${otp}. It is valid for 10 minutes.`,
+        });
 
         res.status(200).json({
             success: true,
-            message: "User logged in successfully",
+            message: "OTP sent to your email. Please verify to complete login.",
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error.",
+        });
+    }
+};
+
+
+const verifyLoginOtp = async (req, res) => {
+    const { email, otp } = req.body;
+
+    if (!email || !otp) {
+        return res.status(400).json({
+            success: false,
+            message: "Email and OTP are required.",
+        });
+    }
+
+    try {
+        const user = await userModel.findOne({ email });
+
+        if (!user) {
+            return res.status(400).json({
+                success: false,
+                message: "User does not exist.",
+            });
+        }
+
+        console.log("Stored OTP:", user.otp, "User entered OTP:", otp); // Debugging
+
+        if (!user.otp || user.otpExpires < Date.now()) {
+            return res.status(400).json({
+                success: false,
+                message: "OTP expired, please try again.",
+            });
+        }
+
+        if (String(user.otp) !== String(otp)) {  // Ensure both are compared as strings
+            return res.status(400).json({
+                success: false,
+                message: "Invalid OTP. Please try again.",
+            });
+        }
+
+        // Clear OTP on successful verification
+        user.otp = null;
+        user.otpExpires = null;
+        await user.save();
+
+        // Generate JWT token
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+
+        res.status(200).json({
+            success: true,
+            message: "OTP verified successfully!",
             token,
             userData: user,
         });
 
     } catch (error) {
         console.error(error);
-        return res.status(500).json({
+        res.status(500).json({
             success: false,
             message: "Internal server error.",
         });
@@ -497,5 +572,6 @@ module.exports = {
     getAllUsers,
     // getSingleUsermobile,
     getMe,
+    verifyLoginOtp,
 };
 
