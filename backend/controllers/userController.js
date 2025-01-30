@@ -9,14 +9,24 @@ const crypto = require("crypto");
 
 dotenv.config();
 
+// Helper function to sanitize inputs
+const cleanInput = (input) => sanitizeHtml(input, {
+    allowedTags: [], // No HTML allowed
+    allowedAttributes: {},
+});
 
 // Create New User (Registration)
 const createUser = async (req, res) => {
     console.log(req.body);
 
-    const { fullname, username, email, password, age, phone, captchaToken } = req.body;
+    const fullname = cleanInput(req.body.fullname);
+    const username = cleanInput(req.body.username);
+    const email = cleanInput(req.body.email);
+    const password = cleanInput(req.body.password);
+    const age = cleanInput(req.body.age);
+    const phone = cleanInput(req.body.phone);
+    const captchaToken = req.body.captchaToken;
 
-    // Validate input fields
     if (!fullname || !email || !username || !age || !password || !phone || !captchaToken) {
         return res.status(400).json({
             success: false,
@@ -43,7 +53,6 @@ const createUser = async (req, res) => {
     }
 
     try {
-        // Check if user already exists
         const userExists = await userModel.findOne({
             $or: [{ email: email }, { username: username }],
         });
@@ -55,7 +64,6 @@ const createUser = async (req, res) => {
             });
         }
 
-        // Validate age requirement
         if (age < 18) {
             return res.status(400).json({
                 success: false,
@@ -63,11 +71,9 @@ const createUser = async (req, res) => {
             });
         }
 
-        // Encrypt the password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        // Create new user
         const newUser = new userModel({
             fullname,
             username,
@@ -77,13 +83,12 @@ const createUser = async (req, res) => {
             phone,
         });
 
-        await newUser.save(); // Save user to the database
+        await newUser.save();
 
         res.status(201).json({
             success: true,
             message: "User created successfully",
         });
-
     } catch (error) {
         console.error(error);
         res.status(500).json({
@@ -93,11 +98,12 @@ const createUser = async (req, res) => {
     }
 };
 
-// User Login
 // User Login with OTP
 const loginUser = async (req, res) => {
     console.log(req.body);
-    const { email, password, captchaToken } = req.body;
+    const email = cleanInput(req.body.email);
+    const password = cleanInput(req.body.password);
+    const captchaToken = req.body.captchaToken;
 
     if (!email || !password || !captchaToken) {
         return res.status(400).json({
@@ -194,7 +200,6 @@ const loginUser = async (req, res) => {
         });
     }
 };
-
 
 const verifyLoginOtp = async (req, res) => {
     const { email, otp } = req.body;
