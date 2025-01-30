@@ -29,8 +29,12 @@ const AdminDashboard = () => {
 
     const handleImage = (event) => {
         const file = event.target.files[0];
-        setProductImage(file);
-        setImagePreview(URL.createObjectURL(file));
+        if (file && (file.type === "image/png" || file.type === "image/jpeg")) {
+            setProductImage(file);
+            setImagePreview(URL.createObjectURL(file));
+        } else {
+            toast.error("Only .png and .jpg files are allowed");
+        }
     };
 
     const handleSubmit = (e) => {
@@ -137,7 +141,7 @@ const AdminDashboard = () => {
                                                 <div className="col-md-6">
                                                     <div className="mb-3">
                                                         <label className="form-label">Choose Product Image</label>
-                                                        <input type="file" className="form-control" onChange={handleImage} />
+                                                        <input type="file" className="form-control" accept=".png, .jpg" onChange={handleImage} />
                                                         {previewImage && (
                                                             <img src={previewImage} alt="Product" className="img-fluid rounded mt-3" style={{ maxWidth: '100%', height: 'auto' }} />
                                                         )}
