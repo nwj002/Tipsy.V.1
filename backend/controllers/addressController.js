@@ -1,5 +1,5 @@
 const ShippingAddress = require('../models/addressModel');
-const User = require('../models/userModel'); // Assuming you have a User model
+const User = require('../models/userModel'); 
 
 
 // Create a new Shipping Address
