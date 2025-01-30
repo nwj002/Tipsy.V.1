@@ -1,15 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import ReCAPTCHA from "react-google-recaptcha";
 import { toast } from "react-toastify";
 import { loginUserApi } from "../../apis/api";
 import './Login.css';
 
 const Login = () => {
     //make a usestate for each input
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     // make a error state
-    const [emailError, setEmailError] = useState('')
-    const [passwordError, setPasswordError] = useState('')
+    const [emailError, setEmailError] = useState('');
+    const [passwordError, setPasswordError] = useState('');
+    const recaptchaRef = useRef(null);
 
     const validate = () => {
         let isValid = true;
@@ -20,7 +22,7 @@ const Login = () => {
         }
 
         if (password.trim() === '') {
-            setPasswordError('password is required');
+            setPasswordError('Password is required');
             isValid = false;
         }
         return isValid;
@@ -33,33 +35,39 @@ const Login = () => {
         if (!validate()) {
             return;
         }
-        // toast.success('login success')
+
+        const captchaToken = recaptchaRef.current.getValue();
+        if (!captchaToken) {
+            toast.error("Please verify CAPTCHA");
+            return;
+        }
+
         // make a json object
         const data = {
             "email": email,
-            "password": password
-        }
+            "password": password,
+            "captchaToken": captchaToken
+        };
+
         // make a api request
         loginUserApi(data).then((res) => {
             //recived data: success message
             if (res.data.success === false) {
-                toast.error(res.data.message)
+                toast.error(res.data.message);
             } else {
-                window.location.href = '/'
-                toast.success(res.data.message)
+                window.location.href = '/';
+                toast.success(res.data.message);
                 // success -bool, message-text, token-text, user data
                 // setting token and user data in local storage
-                localStorage.setItem('token', res.data.token)
+                localStorage.setItem('token', res.data.token);
 
                 // setting user data
-                const convertedData = JSON.stringify(res.data.userData)
+                const convertedData = JSON.stringify(res.data.userData);
 
                 //local storage set
-                localStorage.setItem('userData', convertedData)
-
+                localStorage.setItem('userData', convertedData);
             }
-
-        })
+        });
     }
 
     const images = [
@@ -87,6 +95,7 @@ const Login = () => {
         }, 10000);
         return () => clearInterval(interval);
     }, [images.length]);
+
     return (
         <>
             <div className=" mt-2 ">
@@ -124,11 +133,12 @@ const Login = () => {
                                     <input onChange={(e) => setPassword(e.target.value)} type="password" placeholder="Password" required />
                                     {passwordError && <p className="text-danger">{passwordError}</p>}
 
+                                    <ReCAPTCHA sitekey="6Lc3iccqAAAAAKDkISSoAVeTn0xCki4mSSoUhtsf" ref={recaptchaRef} />
+
                                     <div className="login-options">
                                         <div>
                                             <input type="checkbox" id="remember" />
-                                            <span >Remember me</span>
-
+                                            <span>Remember me</span>
                                         </div>
                                         <a href="/forgot_password">Forgot Password?</a>
                                     </div>
@@ -146,7 +156,7 @@ const Login = () => {
                 </div>
             </div>
         </>
-    )
+    );
 }
 
 export default Login;

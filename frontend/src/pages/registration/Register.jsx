@@ -1,104 +1,112 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
+import ReCAPTCHA from "react-google-recaptcha";
 import { toast } from 'react-toastify';
 import { registerUserApi } from '../../apis/api';
 import FooterCard from '../../components/FooterCard';
 import './Register.css';
 
-
 const Register = () => {
 
     //usestate
-    const [fullname, setFullName] = useState('')
-    const [email, setEmail] = useState('')
-    const [username, setuserName] = useState('')
-    const [age, setAge] = useState('')
-    const [phone, setPhone] = useState('')
-    const [password, setPassword] = useState('')
-    const [confirmPassword, setConfirmPassword] = useState('')
+    const [fullname, setFullName] = useState('');
+    const [email, setEmail] = useState('');
+    const [username, setuserName] = useState('');
+    const [age, setAge] = useState('');
+    const [phone, setPhone] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const recaptchaRef = useRef(null);
 
     //usestate error messages
-    const [fullNameError, setFullNameError] = useState('')
-    const [emailError, setEmailError] = useState('')
-    const [userNameError, setuserNameError] = useState('')
-    const [ageError, setAgeError] = useState('')
-    const [phoneError, setPhoneError] = useState('')
-    const [passwordError, setPasswordError] = useState('')
-    const [confirmPasswordError, setConfirmPasswordError] = useState('')
+    const [fullNameError, setFullNameError] = useState('');
+    const [emailError, setEmailError] = useState('');
+    const [userNameError, setuserNameError] = useState('');
+    const [ageError, setAgeError] = useState('');
+    const [phoneError, setPhoneError] = useState('');
+    const [passwordError, setPasswordError] = useState('');
+    const [confirmPasswordError, setConfirmPasswordError] = useState('');
 
     //making function to change value
     const handleFullName = (e) => {
-        setFullName(e.target.value)
-    }
+        setFullName(e.target.value);
+    };
     const handleEmail = (e) => {
-        setEmail(e.target.value)
-    }
+        setEmail(e.target.value);
+    };
     const handleuserName = (e) => {
-        setuserName(e.target.value)
-    }
+        setuserName(e.target.value);
+    };
     const handleAge = (e) => {
-        setAge(e.target.value)
-    }
+        setAge(e.target.value);
+    };
     const handlePhone = (e) => {
-        setPhone(e.target.value)
-    }
+        setPhone(e.target.value);
+    };
     const handlePassword = (e) => {
-        setPassword(e.target.value)
-    }
+        setPassword(e.target.value);
+    };
     const handleConfirmPassword = (e) => {
-        setConfirmPassword(e.target.value)
-    }
+        setConfirmPassword(e.target.value);
+    };
 
     //validaation
     var validate = () => {
         var isValid = true;
         if (fullname.trim() === '') {
-            setFullNameError('Please enter your full name')
+            setFullNameError('Please enter your full name');
             isValid = false;
         }
         if (email.trim() === '') {
-            setEmailError('Please enter your email')
+            setEmailError('Please enter your email');
             isValid = false;
         }
         if (username.trim() === '') {
-            setuserNameError('Please enter your userName')
+            setuserNameError('Please enter your userName');
             isValid = false;
         }
         if (age.trim() === '') {
-            setAgeError('Please enter your age')
+            setAgeError('Please enter your age');
             isValid = false;
         }
         if (phone.trim() === '') {
-            setPhoneError('Please enter your phone number')
+            setPhoneError('Please enter your phone number');
             isValid = false;
         }
         if (password.trim() === '') {
-            setPasswordError('Please enter your password')
+            setPasswordError('Please enter your password');
             isValid = false;
         }
         if (confirmPassword.trim() === '') {
-            setConfirmPasswordError('Please confirm your password')
+            setConfirmPasswordError('Please confirm your password');
             isValid = false;
         }
         if (confirmPassword.trim() !== password.trim()) {
-            setConfirmPasswordError('Password does not match')
+            setConfirmPasswordError('Password does not match');
             isValid = false;
         }
         return isValid;
 
-    }
+    };
 
     const handleSubmit = (e) => {
-        e.preventDefault()
+        e.preventDefault();
 
         //checking data in console
-        console.log(fullname, email, username, age, phone, password)
+        console.log(fullname, email, username, age, phone, password);
 
         //validate 
         var isValidated = validate();
         if (!isValidated) {
-            return
+            return;
         }
+
+        const captchaToken = recaptchaRef.current.getValue();
+        if (!captchaToken) {
+            toast.error("Please verify CAPTCHA");
+            return;
+        }
+
         const data = {
             "fullname": fullname,
             "email": email,
@@ -106,20 +114,21 @@ const Register = () => {
             "age": age,
             "phone": phone,
             "password": password,
+            "captchaToken": captchaToken
+        };
 
-        }
         registerUserApi(data).then((res) => {
             //recived data: success message
             if (res.data.success === false) {
-                toast.error(res.data.message)
+                toast.error(res.data.message);
             } else {
-                toast.success(res.data.message)
+                toast.success(res.data.message);
             }
         }).catch((err) => {
             //error message
-            toast.error(err.response.data.message)
-        })
-    }
+            toast.error(err.response.data.message);
+        });
+    };
 
     return (
         <>
@@ -169,6 +178,9 @@ const Register = () => {
                                 {confirmPasswordError && <p className='text-danger'>{confirmPasswordError}</p>}
                             </div>
                         </div>
+
+                        <ReCAPTCHA sitekey="6Lc3iccqAAAAAKDkISSoAVeTn0xCki4mSSoUhtsf" ref={recaptchaRef} />
+
                         <button onClick={handleSubmit} className="create-account-btn">Create Account</button>
                     </form>
                     <div className="login-redirect">
@@ -177,10 +189,9 @@ const Register = () => {
                 </div>
             </div>
 
-
             <FooterCard />
         </>
-    )
-}
+    );
+};
 
 export default Register;

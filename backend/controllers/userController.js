@@ -2,134 +2,171 @@ const bcrypt = require('bcrypt');
 const userModel = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 const sendOtp = require('../service/sendOtp');
+const axios = require("axios");
+const dotenv = require("dotenv");
+dotenv.config();
 
-//create new users
+
+// Create New User (Registration)
 const createUser = async (req, res) => {
-
     console.log(req.body);
 
-    const { fullname, username, email, password, age, phone } = req.body;
+    const { fullname, username, email, password, age, phone, captchaToken } = req.body;
 
-    if (!fullname || !email || !username || !age || !password || !phone) {
-        return res.json({
-            "success": false,
-            "message": 'All fields are required'
-        })
+    // Validate input fields
+    if (!fullname || !email || !username || !age || !password || !phone || !captchaToken) {
+        return res.status(400).json({
+            success: false,
+            message: "All fields are required",
+        });
+    }
+
+    // Validate CAPTCHA
+    const isHuman = await verifyRecaptcha(captchaToken);
+    if (!isHuman) {
+        return res.status(400).json({
+            success: false,
+            message: "CAPTCHA verification failed",
+        });
     }
 
     try {
+        // Check if user already exists
         const userExists = await userModel.findOne({
-            $or: [{ email: email }, { username: username }]
+            $or: [{ email: email }, { username: username }],
         });
+
         if (userExists) {
-            return res.json({
-                "success": false,
-                "message": "email or username already exists!"
-            })
-        } if (password.length < 8) {
-            return res.json({
-                "success": false,
-                "message": "Password must be at least 8 characters long"
-            })
-        } if (age < 18) {
-            return res.json({
-                "success": false,
-                "message": "You must be at least 18 years old to create an account"
-            })
+            return res.status(400).json({
+                success: false,
+                message: "Email or username already exists!",
+            });
         }
 
-        //encrypting the password
+        // Validate password length
+        if (password.length < 8) {
+            return res.status(400).json({
+                success: false,
+                message: "Password must be at least 8 characters long",
+            });
+        }
+
+        // Validate age requirement
+        if (age < 18) {
+            return res.status(400).json({
+                success: false,
+                message: "You must be at least 18 years old to create an account",
+            });
+        }
+
+        // Encrypt the password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-
+        // Create new user
         const newUser = new userModel({
-            fullname: fullname,
-            username: username,
-            email: email,
+            fullname,
+            username,
+            email,
             password: hashedPassword,
-            age: age,
-            phone: phone,
+            age,
+            phone,
         });
 
-        await newUser.save(); // saving the data to the database
+        await newUser.save(); // Save user to the database
 
-        res.json({
-            "success": true,
-            "message": 'User created successfully'
+        res.status(201).json({
+            success: true,
+            message: "User created successfully",
         });
 
     } catch (error) {
-        console.log(error);
-        res.json({
-            "success": false,
-            "message": 'Internal server error'
-        })
-    };
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
 };
-//login user
-const loginUser = async (req, res) => {
-    //check incoming data
-    console.log(req.body)
-    // destructuring
-    const { email, password } = req.body;
 
-    //validation
-    if (!email || !password) {
-        return res.json({
-            "success": false,
-            "message": "please enter all the fields.gg"
-        })
+// User Login
+const loginUser = async (req, res) => {
+    console.log(req.body);
+    const { email, password, captchaToken } = req.body;
+
+    // Validate input fields
+    if (!email || !password || !captchaToken) {
+        return res.status(400).json({
+            success: false,
+            message: "Please enter all fields and verify CAPTCHA.",
+        });
     }
 
-    //try catch
+    // Validate CAPTCHA
+    const isHuman = await verifyRecaptcha(captchaToken);
+    if (!isHuman) {
+        return res.status(400).json({
+            success: false,
+            message: "CAPTCHA verification failed",
+        });
+    }
+
     try {
-        // find user by email
-        const user = await userModel.findOne({ email: email })
-        // found data : first name, lastname, email, password
+        // Find user by email
+        const user = await userModel.findOne({ email });
 
-        // not fount the email( error message saying user doesnt exist)
         if (!user) {
-            return res.json({
-                "success": false,
-                "message": "User does not exist."
-            })
+            return res.status(400).json({
+                success: false,
+                message: "User does not exist.",
+            });
         }
 
-        // compare the password.( using bycript)
-        const isValidPassword = await bcrypt.compare(password, user.password)
-
-        // not compare error saying password is incorrect.
+        // Validate password
+        const isValidPassword = await bcrypt.compare(password, user.password);
         if (!isValidPassword) {
-            return res.json({
-                "success": false,
-                "message": "Invalid password"
-            })
+            return res.status(400).json({
+                success: false,
+                message: "Invalid password",
+            });
         }
-        //token ( generate - userdata + KEY)
+
+        // Generate JWT token
         const token = jwt.sign(
             { id: user._id },
             process.env.JWT_SECRET,
-            { expiresIn: '1h' }
+            { expiresIn: "1h" }
         );
 
-        // sending the response ( token, user data,)
-        res.json({
-            "success": true,
-            "message": "user logined successfull",
-            "token": token,
-            "userData": user
-        })
+        res.status(200).json({
+            success: true,
+            message: "User logged in successfully",
+            token,
+            userData: user,
+        });
 
     } catch (error) {
-        console.log(error)
-        return res.json({
-            "success": false,
-            "message": "Internal server error."
-        })
+        console.error(error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error.",
+        });
     }
+};
 
-}
+const verifyRecaptcha = async (token) => {
+    const secretKey = process.env.RECAPTCHA_SECRET_KEY;
+    const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${token}`;
+
+    try {
+        const response = await axios.post(url);
+        return response.data.success;
+    } catch (error) {
+        console.error("reCAPTCHA verification error:", error);
+        return false;
+    }
+};
+
 //fetch user data
 // const getUserData = async (req, res) => {
 //     const { userId } = req.query;
