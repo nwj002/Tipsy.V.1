@@ -312,7 +312,7 @@ const verifyRecaptcha = async (token) => {
 // };
 // function to get single user
 const getSingleUser = async (req, res) => {
-    const id = req.user.id;
+    const id = req.params.id;
     if (!id) {
         return res.json({
             success: false,
