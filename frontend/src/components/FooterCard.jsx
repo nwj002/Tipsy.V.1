@@ -39,7 +39,7 @@ const FooterCard = () => {
                                     }}
                                 ></div>
 
-                                <p className='mt-4 text-light'>Email: tipsy@gmail.com</p>
+                                <p className='mt-4 text-light'>Email: booze@gmail.com</p>
                                 <p className='text-light'>Location: Kathmandu, Nepal</p>
                             </div>
 
@@ -184,7 +184,7 @@ const FooterCard = () => {
                                     }}
                                 ></div>
                                 <p className='text-white'>
-                                    Tipsy is  online store in Nepal that offers an extensive selection of genuine liquors . We provide free delivery right at your doorstep within 45 minutes, with distance coverage up to 6km outside Ring Road. Our delivery hours are from 10am to 10pm, and we are open 365 days
+                                    booze is  online store in Nepal that offers an extensive selection of genuine liquors . We provide free delivery right at your doorstep within 45 minutes, with distance coverage up to 6km outside Ring Road. Our delivery hours are from 10am to 10pm, and we are open 365 days
                                 </p>
                             </div>
                         </div>
@@ -193,7 +193,7 @@ const FooterCard = () => {
                 <div className=' w-100'>
                     <div className='copyright-info text-light container bg-dark d-flex flex-column gap-4 align-items-center flex-lg-row justify-content-between pt-0 w-100 text-center'>
                         <span className='text-center text-light w-100'>
-                            {new Date().toISOString().split("-")[0]} Tipsy &copy; All rights
+                            {new Date().toISOString().split("-")[0]} booze &copy; All rights
                             reserved.
                         </span>
                     </div>

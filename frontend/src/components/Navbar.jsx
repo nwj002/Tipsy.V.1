@@ -49,7 +49,7 @@ const Navbar = () => {
                     <div className="container-fluid">
                         <Link className="navbar-brand d-flex align-items-center ms-1" to="/">
                             <img src="/assets/icon/tipsy.png" alt="Logo" width="40" height="40" className="d-inline-block align-text-top" />
-                            <span className="ml-1">Tipsy</span>
+                            <span className="ml-1">booze.np</span>
                         </Link>
                         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                             <span className="navbar-toggler-icon"></span>

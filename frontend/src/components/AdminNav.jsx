@@ -26,7 +26,7 @@ const AdminNav = () => {
                                 height='40'
                             // className=' align-text-top'
                             />
-                            <h2 className='ml-1'>Tipsy</h2>
+                            <h2 className='ml-1'>booze</h2>
                         </Link>
                     </div>
                     <li className='nav-item'>
