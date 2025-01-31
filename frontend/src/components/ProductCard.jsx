@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { FaMinus, FaPlus } from "react-icons/fa";
-import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { addToCartApi } from "../apis/api";
 
@@ -19,7 +18,7 @@ const ProductCard = ({ productInformation }) => {
         );
     };
 
-    const { id } = useParams();
+    // const { id } = useParams();
     const user = JSON.parse(localStorage.getItem("userData"));
 
     const handleCartButton = (e) => {
@@ -55,7 +54,7 @@ const ProductCard = ({ productInformation }) => {
                     <img
                         className='h-100 w-100'
                         style={{ objectFit: "contain" }}
-                        src={`http://localhost:5000/products/${productInformation.productImage}`}
+                        src={`https://localhost:5000/products/${productInformation.productImage}`}
                         alt={productInformation.productName}
                     />
                 </a>

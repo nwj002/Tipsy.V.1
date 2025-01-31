@@ -1,6 +1,5 @@
-// main server point for the application. ( main file)
-
-// importing the packages. (express.)
+const fs = require('fs');
+const https = require('https');
 const express = require('express');
 // const mongoose = require('mongoose'); // connecting the database with the server.
 const connectDatabase = require('./database/database');
@@ -66,9 +65,14 @@ app.use('/api/review', require('./routes/reviewRoute'))
 app.use("/api/user/login", authLimiter);
 
 
-// starting the server. 
-app.listen(PORT, () => {
-    console.log(`Server-app is running on port ${PORT}`);
-});
+// SSL setup
+// const PORT = process.env.PORT || 5000;
+const httpsOptions = {
+    key: fs.readFileSync('./localhost-key.pem'),
+    cert: fs.readFileSync('./localhost.pem'),
+};
 
+https.createServer(httpsOptions, app).listen(PORT, () => {
+    console.log(`Secure server running at https://localhost:${PORT}`);
+});
 module.exports = app;

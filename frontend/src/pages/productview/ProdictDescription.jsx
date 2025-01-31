@@ -138,7 +138,7 @@ const ProductDescription = () => {
             <div className="product-details">
                 <div className="image-section">
                     <img
-                        src={`http://localhost:5000/products/${product.productImage}`}
+                        src={`https://localhost:5000/products/${product.productImage}`}
                         alt={product.productName}
                     />
                 </div>

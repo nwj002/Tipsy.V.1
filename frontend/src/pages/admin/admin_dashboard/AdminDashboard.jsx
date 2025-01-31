@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { createProductApi, deleteProduct, getAllProducts } from '../../../apis/api.js';
 import AdminNav from '../../../components/AdminNav.jsx';
 import FooterCard from '../../../components/FooterCard.jsx';
-import './Admin.css'; 
+import './Admin.css';
 
 const AdminDashboard = () => {
     const [products, setProducts] = useState([]);
@@ -193,7 +193,7 @@ const AdminDashboard = () => {
                                         <tr key={singleProduct._id}>
                                             <td>
                                                 <img
-                                                    src={`http://localhost:5000/products/${singleProduct.productImage}`}
+                                                    src={`https://localhost:5000/products/${singleProduct.productImage}`}
                                                     alt="Product"
                                                     className="img-fluid"
                                                     style={{ height: 80, width: 80, objectFit: 'cover' }}

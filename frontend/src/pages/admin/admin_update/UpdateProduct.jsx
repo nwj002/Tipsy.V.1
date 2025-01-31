@@ -86,7 +86,7 @@ const UpdateProduct = () => {
                         <div className='d-flex justify-content-between align-items-stretch' style={{ maxWidth: '1100px', width: '95%', background: "black", borderRadius: '8px' }}>
                             <div className='d-flex justify-content-center align-items-center' style={{ width: '50%', height: '600px' }}>
                                 <img
-                                    src={previewNewImage || `http://localhost:5000/products/${oldImage}`}
+                                    src={previewNewImage || `https://localhost:5000/products/${oldImage}`}
                                     alt="Product Image"
                                     style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }}
                                 />

@@ -137,7 +137,7 @@ const Cart = () => {
             publicKey: "test_public_key_0800545e039d45368cab4d1b2fb93d01",
             productIdentity: "1234567890",
             productName: "Cart Items",
-            productUrl: "http://example.com/cart",
+            productUrl: "https://example.com/cart",
             eventHandler: {
                 onSuccess(payload) {
                     console.log("Khalti success payload:", payload);
@@ -218,7 +218,7 @@ const Cart = () => {
                                         <tr key={cart._id} className="border-b">
                                             <td className="flex items-center py-4">
                                                 <img
-                                                    src={cart.productID ? `http://localhost:5000/products/${cart.productID.productImage}` : '/placeholder.png'}
+                                                    src={cart.productID ? `https://localhost:5000/products/${cart.productID.productImage}` : '/placeholder.png'}
                                                     alt={cart.productID ? cart.productID.productName : 'Product Image'}
                                                     className="w-20 h-20"
                                                 />
