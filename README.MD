@@ -101,41 +101,41 @@ cd tipsy
 ## **Backend Setup**
 
 1. Navigate to the `backend` folder:
-   ```bash
+
    cd backend
 
 2. Install the required dependencies 
-```bash
+
 npm install
 
 3. Create a .env file in the backend folder with the following content:
-```bash
+
 PORT=5000
 MONGO_URI=<your-mongodb-connection-uri>
 JWT_SECRET=<your-jwt-secret>
 RECAPTCHA_SECRET_KEY=<your-recaptcha-secret>
 
 Start the backend server:
-```bash
+
 npm start
 
 ## **Frontend Setup**
 
 1. Navigate to the `frontend` folder:
-   ```bash
+
    cd frontend
 
 2. Install the required dependencies 
-```bash
+
 npm install
 
 3. Create a .env file in the frontend folder with the following content:
-```bash
+
 HTTPS=true
 SSL_CRT_FILE=./certs/localhost.pem
 SSL_KEY_FILE=./certs/localhost-key.pem
 REACT_APP_BACKEND_URL=https://localhost:5000
 
 Start the frontend server:
-```bash
+
 npm start
