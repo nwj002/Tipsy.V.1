@@ -1,6 +1,6 @@
-# Tipsy
+# booze.np
 
-**Tipsy** is a full-stack liquor ordering web-based platform built using the MERN stack (MongoDB, Express.js, React.js, Node.js). This project incorporates multiple security measures to ensure a secure and user-friendly experience.
+**booze.np** is a full-stack liquor ordering web-based platform built using the MERN stack (MongoDB, Express.js, React.js, Node.js). This project incorporates multiple security measures to ensure a secure and user-friendly experience.
 
 ---
 
@@ -94,9 +94,9 @@
 
 ### **1. Clone the Repository**
 ```bash
-git clone https://github.com/nwj002/Tipsy.V.1.git
+git clone https://github.com/nwj002/booze.np.git
 
-cd tipsy
+cd booze
 
 ## **Backend Setup**
 
