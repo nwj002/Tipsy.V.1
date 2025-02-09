@@ -85,8 +85,6 @@
    - Sessions managed securely with cookies.
 9. **Activity Logging**
    - Logs user activities for admin review.
-10. **Helmet.js**
-    - Sets secure HTTP headers.
 
 ---
 
